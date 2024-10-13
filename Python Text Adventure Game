@@ -1,0 +1,84 @@
+def show_instructions():
+    print("""
+Welcome to the Text Adventure Game!
+Navigate through rooms, collect items, and try to reach the Treasure Room.
+Commands: 
+  go [direction] (north, south, east, west)
+  get [item]
+  quit
+    """)
+
+def show_status(room, inventory):
+    print("\n---------------------------")
+    print(f"You are in the {room['name']}.")
+    print(f"Inventory: {inventory}")
+    if "item" in room:
+        print(f"You see a {room['item']}.")
+    print("---------------------------")
+
+# Game rooms
+rooms = {
+    'Hall': {
+        'name': 'Hall',
+        'east': 'Kitchen',
+        'south': 'Garden',
+        'item': 'Key'
+    },
+    'Kitchen': {
+        'name': 'Kitchen',
+        'west': 'Hall',
+        'item': 'Monster'
+    },
+    'Garden': {
+        'name': 'Garden',
+        'north': 'Hall',
+        'item': 'Treasure'
+    }
+}
+
+# Start the player in the Hall
+current_room = rooms['Hall']
+inventory = []
+
+# Show instructions
+show_instructions()
+
+# Main game loop
+while True:
+    show_status(current_room, inventory)
+    
+    # Get player's next action
+    action = input("What would you like to do? ").lower().split()
+
+    # Handle the 'quit' command
+    if action[0] == 'quit':
+        print("Thanks for playing!")
+        break
+
+    # Handle the 'go' command to change rooms
+    elif action[0] == 'go':
+        direction = action[1]
+        if direction in current_room:
+            current_room = rooms[current_room[direction]]
+        else:
+            print("You can't go that way!")
+
+    # Handle the 'get' command to pick up an item
+    elif action[0] == 'get':
+        item = action[1]
+        if 'item' in current_room and item == current_room['item']:
+            inventory.append(item)
+            print(f"{item.capitalize()} picked up!")
+            del current_room['item']
+        else:
+            print(f"There's no {item} here to pick up!")
+
+    # Check if the player encountered the monster
+    if current_room['name'] == 'Kitchen' and 'Monster' in inventory:
+        print("Oh no! You encountered a monster and lost the game!")
+        break
+
+    # Check if the player wins by finding the treasure
+    if current_room['name'] == 'Garden' and 'Key' in inventory:
+        print("Congratulations! You used the key and found the treasure. You win!")
+        break
